@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{post.list.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{post.list.headline}]]</h1>
+                <div>
+                    <a th:href="@{/posts/add}" class="btn btn-primary ms-2">[[#{post.list.createNew}]]</a>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap mb-4">
+                <form th:action="@{/posts}" method="get">
+                    <div class="flex-grow-1">
+                        <input type="text" th:name="q" th:value="${q}" />
+                        <input type="submit" value="Search" />
+                    </div>
+                </form>
+            </div>
+            <div th:if="${!postPage.hasContent()}">[[#{post.list.empty}]]</div>
+            <div th:if="${postPage.hasContent()}">
+                <div class="">
+                    <ul class="list-group list-group-horizontal">
+                        <li th:each="aggregate : ${postPage.tagAggregations}" class="list-group-item">
+                            [[${aggregate.first}]]
+                            <span class="badge bg-primary rounded-pill">[[${aggregate.second}]]</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">[[#{post.id.label}]]</th>
+                                <th scope="col">[[#{post.title.label}]]</th>
+                                <th scope="col" class="tags">[[#{post.tags.label}]]</th>
+                                <th scope="col">[[#{post.content.label}]]</th>
+                                <th scope="col">[[#{post.user.label}]]</th>
+                                <th><!-- --></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="post : ${postPage.content}">
+                                <td>[[${post.id}]]</td>
+                                <td>[[${post.title}]]</td>
+                                <td>
+                                    <span th:each="tag : ${post.tags}" class="badge bg-secondary">[[${tag}]]</span>
+                                </td>
+                                <td class ="long-text">[[${post.content}]]</td>
+                                <td>[[${post.user}]]</td>
+                                <td>
+                                    <div class="float-end text-nowrap">
+                                        <a th:href="@{/posts/edit/{id}(id=${post.id})}" class="btn btn-sm btn-secondary">[[#{post.list.edit}]]</a>
+                                        <form th:action="@{/posts/delete/{id}(id=${post.id})}"
+                                                th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                            <button type="submit" class="btn btn-sm btn-secondary">[[#{post.list.delete}]]</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <nav aria-label="navigation" th:if="${postPage.totalPages > 0}">
+                        <ul class="pagination">
+                            <li th:each="pageNumber : ${#numbers.sequence(1, postPage.totalPages)}"
+                                th:class="${pageNumber == postPage.number + 1} ? 'page-item active' : 'page-item'">
+                                <a class="page-link" th:href="@{/posts(size=${postPage.size}, page=${pageNumber-1}, q=${q})}"
+                                   th:text=${pageNumber}></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

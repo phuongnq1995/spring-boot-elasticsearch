@@ -1,0 +1,14 @@
+.long-text {
+    max-width: 240px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.tags {
+    max-width: 180px;
+}
+
+.badge{
+    margin: 3px
+}
